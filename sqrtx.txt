@@ -1,0 +1,78 @@
+2018-01-02 
+
+This morning's leetcode question Sqrt(x) comes from 
+https://leetcode.com/problems/sqrtx/description/
+
+Essentially I am taking on the challenge of developing a function that 
+mirrors the square root function. The function would consume an integer, and produce
+the floored int version of square root of that integer. Limitations toward developing this
+function includes, not being able to use the actual square root function and as always
+producing an efficient solution. I am also provided with the assumption that 
+the inputed integer is a non negative integer. 
+
+I'll attempt with a more brute force approach. I set a counter integer i to zero. 
+Starting from zero I slowly increment one by one until I 
+reach an integer whose square is greater than the inputed integer. - When i^2 >= x. 
+The one less of that integer is returned. One less due to how the while loop 
+performs an extra iteration for the equal. Consider below: 
+
+class Solution {
+    public int mySqrt(int x) {
+        int i = 0;
+        while(Math.pow(i, 2)<=x){
+            i++; 
+        }
+        return i-1; 
+    }
+} 
+
+The solution above was accepted by leetcode.-Usually, I would not reach a solution so easily. In the future,
+I believe that questions will take longer to solve and take many more trials. 
+It runs in O(n) time due to the single while loop. 
+
+To check my calculations, I ran my solution in DrRacket. 
+Usually, when I suspect that a code is behaving weirdly or just want to double check
+, calculations wise, I would run it in DrRacket. 
+I mustered up the following function in DrRacket and ran it in the test environment. 
+
+(define (sqrt-func x y)
+  (cond [(> (sqr y) x) (sub1 y)]  ;;base case given that square of current increment counter has surpassed inputed x int
+        [else (sqrt-func x (add1 y))])) ;;recursive section
+
+In the test environment, 
+
+> (sqrt-func 2147395600 0)
+46340
+
+As suspected, our brute force solution was correct in deducing the floored int version of the square root of 
+2147395600. 
+
+I guess that is one way to go about it. But it took approx. 147 ms, which is somewhat inefficient. 
+Perhaps there is a more efficient method. In the discussion forums, 
+many user's applied Newton's Method to deduce the square root. The following site has a nice crash course
+on Newton's Method: 
+
+http://mathworld.wolfram.com/NewtonsIteration.html
+
+Putting it into java, we have something along the lines of:
+
+class Solution {
+    public int mySqrt(int x) {
+        double i =  x; 
+        while (Math.pow(i, 2) > x){
+            i = (i+x/i)/2; 
+        }
+        return (int)i; 
+    }
+}
+
+Applying Newton's Method took approx. one third of the run time in comparison with the brute force approach. 
+It is definitely something to keep in mind for the future if I ever need to incorporate something along 
+the lines of this problem. I believe questions like these that challenge programmers to mirror the basic algorithmic functions
+they use daily in their programs are vital towards understanding the fundamentals. 
+I intend on doing more of the algorithmic based questions in the future. 
+
+Things to take away from today: 
+
+- Applying Newton's Method to calculate square roots 
+- Deeper understanding towards square roots 
