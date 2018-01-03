@@ -1,0 +1,181 @@
+Daily LeetCode Challenge 2017-01-03
+
+*This challenge was completed on the 29th of December 2017 but took around 2 days to document our processes. 
+
+Today's leetcode challenge is done in collaboration with my friend Terry at: 
+https://github.com/yimang
+
+Today we tackled the Isomorphic Strings problem found at 
+https://leetcode.com/problems/isomorphic-strings/description/
+
+The problem raised many interesting thoughts toward achieving an efficient solution. 
+One of which consisted of incrementing and pairing each corresponding
+letter placement in each word. The assumption that the two strings are of equal length help 
+validate this. For each incrementation, we would have stored the pair into an array. Each incrementation
+would have been done under each iteration of a for loop. For each iteration then, we would also have to check
+if each pair is unique in the array. If it is, we continue looping and if not we would have stopped 
+and returned false. Consider the following:
+
+Ex. run isomorphic-strings("apple", "beach"); 
+Iteration 1: First pair - "ab", unique and enters in array
+Iteration 2: Second pair - "pe", unique and enters in array
+Iteration 3: Third pair - "pa" not unique as p is already paired with e, in the previous iteration 
+Loop ends and false is returned and thus not isomorphic.
+
+This approach would have taken long runtimes and increased complexity so it was scrapped.
+But, we felt like we were on the right track. As such, we employed a hash map to mimic our previous ideology. 
+I've never worked with HashMaps before so this was a great learning experience. The link below gave a great crash
+course on the ups and downs of hashmap. - Definitely, a tool I plan on using in the future to remove duplication 
+while maintaining low complexity and run time. 
+
+https://docs.oracle.com/javase/7/docs/api/java/util/HashMap.html
+
+At HashMap<char, char> map = new HashMap<char, char>(); a HashMap is created to assign keys to stored values. 
+In the loop, we iterate through each character of s and uniquely store them into the hashmap, removing any duplication. 
+Storing unique values using the initial method with arrays would have required an additional iteration through the array to check for
+doubles which would have taken longer to compute. - Most likely would have ran in O(n^2) time. 
+We continue this for loop until we have the last character. Since, we assume that s and t are of the same length, 
+i < s.length() would have been no different than i < t.length(). 
+
+Terry and I mustered up the following sample solution. We gave it a try, however, we ran into an error
+with line 5:         HashMap<char, char> map = new HashMap<char, char>();
+
+import java.util.*; 
+
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        HashMap<char, char> map = new HashMap<char, char>();
+        for(int i = 0; i < s.length(); i++){
+            // not in hashmap
+            if(!map.containsKey(s.charAt(i))){
+                map.put(s.charAt(i), t.charAt(i));
+            }
+
+            // in hashmap
+            else if(map.get(s.charAt(i)) != t.charAt(i))
+            {
+                return false;
+            }
+        }
+        return true; 
+    }
+}
+
+It seems that HashMap accepts chars as a valid type, however, we weren't correct in declaring it 
+as a primitive type, as such it should have been: 
+HashMap<Character, Character> map = new HashMap<Character, Character>();
+
+The following link assisted in clarifying this hiccup. Ultimately, we should have entered
+a class instead of a primitive type. 
+
+https://docs.oracle.com/javase/7/docs/api/java/lang/Character.html
+
+Making the change resulted in the following script:
+
+import java.util.*; 
+
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        HashMap<Character, Character> map = new HashMap<Character, Character>();
+        for(int i = 0; i < s.length(); i++){
+            // not in hashmap
+            if(!map.containsKey(s.charAt(i))){
+                map.put(s.charAt(i), t.charAt(i));
+            }
+
+            // in hashmap
+            else if(map.get(s.charAt(i)) != t.charAt(i))
+            {
+                return false;
+            }
+        }
+        return true; 
+    }
+}
+
+The solution above completed multiple test cases, however, we encountered an error once given 
+isIsomorphic("ab","aa"); test case. The problem lies with our solution not matching the two different characters
+to the same character. It seems we were only approaching this one sided. Yes the solution is correct in saying that
+the first pair is unique "aa" (first a from s and first a from t). But it isn't correct in saying 
+that "ba" is unique. It returns true because it "one sided-ly" checks if b is within the hashmap (checking 
+from s to t). Whereas the solution should have checked from the other side (t to s)
+also to see if the letter pairings were unique or not. If it had been like such, it would have been "aa" , entering
+into the hashmap, while "ba" would have returned false due to how a is already paired with a. 
+
+We verified this finding through switching appropriate instances of s with t and vice versa. Like such:
+
+import java.util.*; 
+
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        HashMap<Character, Character> map = new HashMap<Character, Character>();
+        for(int i = 0; i < s.length(); i++){
+            // not in hashmap
+            if(!map.containsKey(t.charAt(i))){
+                map.put(t.charAt(i), s.charAt(i));
+            }
+
+            // in hashmap
+            else if(map.get(t.charAt(i)) != s.charAt(i))
+            {
+                return false;
+            }
+        }
+        return true; 
+    }
+}
+
+A quick edit we made to the script, by switiching instances of s with t and vice versa, we deduced an important conclusion. 
+The code failed for the test case, isIsomorphic("aa","ab"); This is a reversed scenario of our previous test case with "ab" and "aa"
+It seems we were on the right track, but for it to function properly, we need to somehow efficiently implement hashmap in a two sided 
+manner so that it checks from t to s and s to t. 
+
+We intended on employing a hashset to replace the hashmap. 
+
+https://docs.oracle.com/javase/7/docs/api/java/util/HashSet.html
+
+But for the sake of simplicity, we employed an additional hashmap. 
+One hashmap to check uniqueness and correctness from s to t and
+another hashmap to check the pairings from t to s. 
+This approach sacrifices a bit of complexity and runtime, but it worked. 
+
+import java.util.*; 
+
+class Solution {
+    public boolean isIsomorphic(String s, String t) {
+        HashMap<Character, Character> map = new HashMap<Character, Character>();
+        HashMap<Character, Character> map2 = new HashMap<Character, Character>();
+        //HashSet<Character> set = new HashSet<Character>(); 
+        
+        for(int i = 0; i < s.length(); i++){          
+            // not in hashmap
+            if(!map.containsKey(s.charAt(i)) ){
+                map.put(s.charAt(i), t.charAt(i));
+                //set.add(t.charAt(i));
+            }
+
+            // in hashmap
+            else if(map.get(s.charAt(i)) != t.charAt(i) )
+            {
+                return false;
+            }
+            
+	    //backwards check from t to s, not in hashmap
+            if(!map2.containsKey(t.charAt(i))){
+                map2.put(t.charAt(i), s.charAt(i));
+            }
+            
+	    //from t to s, in hashmap
+            else if(map2.get(t.charAt(i)) != s.charAt(i)){
+                return false; 
+            }
+        }
+        return true; 
+    }
+}
+
+Our solution was accepted by leetcode and successfully passed all the test cases. 
+
+What I got out of it: 
+- Declaring primitive types vs declaring class 
+- Application of HashMaps and Definition 
