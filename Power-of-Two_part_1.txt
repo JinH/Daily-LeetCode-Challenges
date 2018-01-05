@@ -1,0 +1,116 @@
+2018-01-04 
+
+Today's leetcode challenge is Power of Two from: 
+https://leetcode.com/problems/power-of-two/description/
+
+Essentially, the challenge is to construct a solution that consumes an
+integer n and determine if it is a power of 2. Basically, if n may be
+produced from 2^a, where a is an integer. If it is a power of n, the solution
+would return true, and if it is not then false. 
+
+A brute forced approach would be to continously divide the input n by 2 
+until a certain threshold. The exiting point for the loop would be when n is 
+equal to one, and thus returning true. If n is ever less than one, then 
+the solution would return false. It is important to say that an integer that is a power
+of 2 would be even number, however, an even number does not imply it is a power of 2. 
+
+I will try to avoid the brute force approach and apply some math to solve this problem. 
+The solution will be constructed from logarithmic properties. 
+
+To determine if a value is a power of another integer, we can express it differently 
+with logs. Consider the following:
+
+If x^y=z then log_x_z = y. 
+
+As such, if inputed n is a power of base 2, then log_2_n has to be an integer. 
+Our solution would simply be determining if log_2_n is an integer or not. 
+
+We can apply the Math.log tool to get the log of a value. I do not believe that I can declare my
+logarithmic base, so we can apply a logarithmic property. - Note: Math.log has set base e or ln()
+
+I employed the change of base formula as highlighted here:
+
+https://people.richland.edu/james/lecture/m116/logs/properties.html
+
+In java, we would have Math.log(n)/Math.log(2) to determine log n to the base 2. 
+
+Therefor we have, 
+
+class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return Math.log(n)/Math.log(2)==(int)(Math.log(n)/Math.log(2)); 
+    }
+}
+
+To check if the produced value is an integer, I compared the actual value with an integer form
+of that value. - Note that doubles like 29.0 and integers like 29, are still of equal value. 
+
+After running the solution, it passed all test cases except one. 
+
+isPowerOfTwo(536870912) produces false when it should have produced true. 
+
+2 to the exponent of 29 is 536870912, which should have produced true, but did not. After some 
+investigation, it seems that Math.log(536870912)/Math.log(2) does not produce 29 exactly but 
+29.000000000000004. - This was verified by running my solution in an online java emulator. I used
+the one from:
+
+https://www.tutorialspoint.com/compile_java_online.php
+
+It is essentially 29, but just the small skim over the top caused an incorrect solution. I will be wary of this
+in the future. I'll attempt to fix this by rounding to about 2 decimal places. My first attempt, 
+
+class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return ((double) (Math.round((Math.log(n)/Math.log(2))*100)/100))==(int)(Math.log(n)/Math.log(2)); 
+    }
+}
+
+I thought that java would have rounding to 2 decimal places in the form of Math.round(n,2);. As such, I employed 
+the rounding approach they mentioned in this forum: 
+
+https://stackoverflow.com/questions/11701399/round-up-to-2-decimal-places-in-java
+
+The solution fails for the test case isPowerofTwo(3); This is due to how Math.log(3)/Math.log(2) equals
+1.5849625007211563 and (double) (Math.round((Math.log(3)/Math.log(2))*100)/100) produces 1.0. I'll have
+to figure out how to round before getting to the solution. 
+
+After some investigation in the stackoverflow forum, I did some tweaking and rearranging to get what I wanted: 
+
+(double) ((int) ((Math.log(n)/Math.log(2))*100))/100 would round n to decimal places. 
+
+Tracing through this for Math.log(3): 
+
+Math.log(3)/Math.log(2) = 1.5849625007211563
+(Math.log(3)/Math.log(2))*100) = 158.49625007211563
+(int) ((Math.log(n)/Math.log(2))*100)) = 158 //Converts to integer 
+(double) ((int) ((Math.log(n)/Math.log(2))*100))/100 = 1.58 
+
+It took some rearranging than the initial ((double) (Math.round((Math.log(n)/Math.log(2))*100)/100)) 
+
+The solution currently looks like:
+
+class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return (double) ((int) ((Math.log(n)/Math.log(2))*100))/100==(int)(Math.log(n)/Math.log(2)); 
+    }
+}
+
+Unforunately, it fails for isPowerofTwo(257); Perhaps two decimal placements is not enough. 
+Increasing it to 6 decimal placements resolves the problem but fails for test case 
+isPowerofTwo(2097153) which produces true instead of false. 
+
+Current Solution with 6 decimal placements. 
+
+class Solution {
+    public boolean isPowerOfTwo(int n) {
+        return (double) ((int) ((Math.log(n)/Math.log(2))*1000000))/1000000==(int)(Math.log(n)/Math.log(2)); 
+    }
+}
+
+I will continue this challenge tomorrow. 
+
+What I got out of today: 
+- Manipulating Math.round to get a certain decimal placements 
+- Excercise of Logarithmic properties and Math.log  
+
+
