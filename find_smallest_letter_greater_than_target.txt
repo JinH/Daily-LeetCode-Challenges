@@ -1,0 +1,47 @@
+2018-01-05 
+
+I'll be continuing the Power-of-Two Challenge some other time. 
+Today, I'll be completing the Find Smallest Letter Greater Than Target
+question found at: 
+
+https://leetcode.com/problems/find-smallest-letter-greater-than-target/description/ 
+
+Essentially, the purpose of the solution is to consume one sorted char array, populated 
+with lower case letters, and one char and produce the first char in the array that is greater than
+the target. If target is greater than all the chars in letters, then letters "wraps around again"
+and the first element of the char array is returned. "Greater Than" in this case pertains to a char's
+placement in the alphabet, where letters near the end of the alphabet are greater than the letters
+near the start. 
+
+For this question, comparing chars makes a great deal of the solution. But, it is beyond my knowledge to 
+program a solution to directly compare chars with another, and as such I'll be comparing each char's unicode
+with one another and determining which one is greater. The following website gives a clear example on how to convert
+chars to their assigned unicode in java. 
+
+http://www.codecodex.com/wiki/Find_the_ASCII_or_Unicode_value_of_a_character
+
+The solution will surround a single for loop that will iterate through each char of letters and determine
+if target is less than it. If target is less, then the char in that iteration is returned. If the for loop
+ends with no char in letters greater than target, then target is greater than all the chars in letters. That
+scenario would result in the first element being returned. 
+
+class Solution {
+    public char nextGreatestLetter(char[] letters, char target) {
+        for(int i=0; i < letters.length; i++){
+            if((int)target < (int)letters[i]){
+                return letters[i];
+            }
+        }
+        return letters[0]; 
+    }
+}
+
+The solution was accepted by leetcode and is also quite efficient as it has a runtime of 16 ms. 
+I took a peek in the discussion session and some users employed a binary search for their solutions. 
+For this question, it gets the job done, however, with all the assumptions given, it is unnecessary. 
+But, I do believe employing a binary search would solve higher level and advanced versions of this question. 
+
+What I got out of today: 
+- Exercise of comparing with unicodes 
+
+
