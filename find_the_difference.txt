@@ -1,0 +1,63 @@
+2018-01-07
+
+"Find the Difference" 
+Link: https://leetcode.com/problems/find-the-difference/description/ 
+
+Purpose: Construct a solution that consumes two strings: s and t, 
+and produces the character difference between them. - t contains
+s but with an extra character, from the lower case alphabet, inserted 
+in a random position within the string. 
+
+For example, findTheDifference("train", "etrain"); would return 
+'e'. 
+
+Initial Thoughts: My initial idea was to develop a solution that would
+track the occurences of each character in each string and compare them at the 
+end. Consider, a solution populating 4 arrays where, 
+
+a. 1 array stores each character of s
+b. 1 array to store the number of occurences of each letter in s. 
+c. 1 array stores each character of t 
+d. 1 array to store the number of occruences of each letter in t. 
+
+Arrays b and d would be compared and the element with the difference, 
+would be looked up in t and returned. A complex, solution unfortunately. 
+
+
+First Attempt: I'll trash my initial approach, and I'll drive the problem out. 
+Since it is most likely that a majority of s and t are the same, for s is a subset
+of t, it is easier to figure out what is different than what is the same. I'll
+apply what I learned about unicodes in the past and previous excercises to produce a solution. 
+
+I plan on looping through string s and determining the total sum of the unicodes from each character. 
+Since, s is a subset of t, then the difference in unicode of t and s must be the unicode of the extra
+character. As such, the solution would end by returning the converted form of unicode->char. 
+
+Code: 
+
+class Solution {
+    public char findTheDifference(String s, String t) {
+        int s_count = 0;
+        int t_count = 0; 
+        
+        for(int i=0; i < s.length(); i++){ //accumulates unicodes from s
+            s_count += (int)s.charAt(i); 
+        }
+        for(int j=0; j < t.length(); j++){ //accumulates unicodes from t
+            t_count += (int)t.charAt(j);
+        }
+        
+        return (char)(t_count-s_count); 
+    }
+}
+
+The solution was accepted by leetcode with a runtime of 6ms. I presume it runs in O(n) time. 
+- O(n) + O(n) = O(n), with the two big runtime factors being the for loops. 
+
+After a look in the discussion column, it was nice to see that my solution's core was similar 
+to that of other users. - Perhaps this may be interpreted as progress. :) 
+
+What I got out of today: 
+
+- Application of "driving the problem out" approach 
+- Additional exercise using unicodes
