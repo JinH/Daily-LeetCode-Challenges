@@ -1,0 +1,92 @@
+2018-01-09 
+
+Leetcode Question: strStr() 
+Link: https://leetcode.com/problems/implement-strstr/description/ 
+
+Purpose: To construct a solution that consumes 2 strings: needle and haystack and 
+produce the index of the first occurence of string needle in haystack. If haystack
+does not contain the string needle, then -1 is returned. Consider, potential testcases 
+
+strStr("computer", "put"); -> 3 
+strStr("computer", "mac"); -> -1 
+strStr("computer", "computer") -> 0
+
+First attempt: I plan on taking needle and traversing it across haystack. 
+For each iteration, needle would be compared to each segment of haystack and 
+determined if it is equal or not. Segments of haystack span only as long
+as the length of the string of needle. If needle does equal to a segment
+in haystack, then the solution returns the starting index, and
+if not the loop continues. If the loop ends, then -1 is returned meaning that at no point 
+in haystack does it equal to needle. 
+
+Consider, 
+
+class Solution {
+    public int strStr(String haystack, String needle) {
+        for(int i=0; i+needle.length() <= haystack.length(); i++){
+		
+            if(haystack.substring(i, i+needle.length()) == needle){
+                return i;
+            }
+        }
+        return -1; 
+    }
+}
+
+I ran the solution, and it produced -1. After some investigation and running
+it on an online java emulator, it seems that the for loop does not go into the if condition. 
+- Despite for certain iterations, both arguments being equal in value. 
+
+The following link helps in explaining the problem. 
+https://stackoverflow.com/questions/513832/how-do-i-compare-strings-in-java
+
+It seems that problem with using == when comparing if two strings are equal or not, is that
+it compares the reference rather than the value. For my learning sake, I will try my best to explain it. 
+If a string is to be compared and is unique, meaning that it is the first instance of mentioning it, java
+will store it in a string literal pool. Java will not make extra storage room for future mentions 
+of the same string but will instead point to the memory location of where the initial string was stored. 
+I believe java does this to save memory, by pooling same instances of values to one memory location.
+I believe it only pools to that memory location if it is declared in the same approach. Strings that have
+the same values but declared differently and thus having different addresses in the pool would not be considered
+the same under the "==" operator.
+
+For example, 
+String shopping_list_item_1 = "milk"; 
+String shopping_list_item_2 = "milk"; 
+String summary_item = "milk for tots".substring(0,4); //->"milk" 
+String add_item_to_list = new String("milk");
+
+As such, 
+
+shopping_list_item_1==shopping_list_item_2 -> true
+summary_item==shopping_list_item_1-> false //despite having the same values 
+add_item_to_list==shopping_list_item_2 -> false 
+
+Consider, 
+
+https://stackoverflow.com/questions/11700320/is-string-literal-pool-a-collection-of-references-to-the-string-object-or-a-col
+https://www.youtube.com/watch?v=47-kDKPWBBM
+
+For this solution I want to compare if two strings are equal in value and as such I would apply
+.equal()
+
+Applying the changes I have,
+
+class Solution {
+    public int strStr(String haystack, String needle) {
+        for(int i=0; i+needle.length() <= haystack.length(); i++){
+            if(haystack.substring(i, i+needle.length()).equals(needle)){
+                return i;
+            }
+        }
+        return -1; 
+    }
+}
+
+The solution was accepted by leetcode and has a runtime of 7 ms. With only one for loop, it 
+runs in O(n) runtime. 
+
+What I got out of today: 
+- introduction to understanding string literal pools in java
+- == tests for if two inputs are equal in terms of reference and .equals() checks if two inputs are equal in terms of value 
+- for the future I should always use .equals() when comparing two strings.
