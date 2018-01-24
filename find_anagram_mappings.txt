@@ -1,0 +1,101 @@
+2018-01-24
+
+A continuation of a challenge I tackled about 2 weeks ago tomorrow. 
+
+LeetCode: Find Anagram Mappings
+Link: https://leetcode.com/problems/find-anagram-mappings/description/ 
+
+Problem: To create a solution that consumes two integer arrays and produce
+an integer array populated with indexes of items in A that are in B. 
+
+First Attempt: I'll start off with a relatable solution and hoping it would 
+be accepted. I'll slowly iterate through each element in array A and compare them
+with every element in array B. With that being said, it would mean a for loop to iterate
+through B nested within a for loop that iterates through array A. - For iteration of A, 
+B.length * iterations are made throughout B. 
+
+When an element in A is found in element B, its index in B is stored in an array 
+that is returned to the user at the end: myarray. This would mean that for the 
+case of duplication, if there are more than one occurence of an element in A in B, 
+then the latter index would be stored into myarray. This does not matter for this question
+due to its assumptions. 
+
+Consider, 
+
+class Solution {
+    public int[] anagramMappings(int[] A, int[] B) {
+        int[] myarray = new int[A.length]; 
+        
+        for(int i = 0; i < A.length; i++){
+            for(int j = 0; j < B.length; j++){
+                if(A[i] == B[j]){
+                    myarray[i] = j; 
+                }
+            }
+        }
+        
+        return myarray; 
+    }
+}
+
+The solution was accepted by leetcode with a runtime of 7 to 8 ms. 
+A simple and fast solution to wrap around. Perhaps there is an even better solution in the sea? 
+
+In the corresponding leetcode discussion forum, some users applied a hashmap to store the indexes and
+associated values. Afterwards elements of A are considered as keys and fetched from the hashmap to retrieve
+the indexes. Consider the following: 
+
+class Solution {
+    public int[] anagramMappings(int[] A, int[] B) {
+        HashMap<Integer, Integer> mymap = new HashMap<>(); 
+        
+        for (int i = 0; i < B.length; i++){//Populates hashmap with elements in B array
+            mymap.put(i, B[i]); 
+        }
+        
+        for (int j = 0; j < A.length; j++){
+            A[j] = mymap.get(A[j]); //Replaces array A with array of indexes of elements of A in B. 
+		//Instead of creating another array to store the indexes, I reused array A 
+        }
+        
+        return A; 
+    }
+}
+
+Running this resulted in the following error message:
+
+Exception in thread "main" java.lang.NullPointerException
+	at Solution.anagramMappings(Solution.java:10)
+	at __DriverSolution__.__helper__(__Driver__.java:10)
+	at __Driver__.main(__Driver__.java:56)
+
+The crash seems to have appeared on line 10, but after a closer look, I have to edit line 6, the order of 
+how I store the key and its associated value into the hashmap, to get the solution working. 
+
+It seems that the order is suppose to be <key, value> instead of my initial <value, key>.
+-Where the key is the value of element in B, and the value is the index. Not the other way around. 
+Making the change, I have
+
+class Solution {
+    public int[] anagramMappings(int[] A, int[] B) {
+        HashMap<Integer, Integer> mymap = new HashMap<>(); 
+        
+        for (int i = 0; i < B.length; i++){//Populates hashmap with elements in B array
+            mymap.put(B[i], i); 
+        }
+        
+        for (int j = 0; j < A.length; j++){
+            A[j] = mymap.get(A[j]); //Replaces array A with array of indexes of elements of A in B. 
+		//Instead of creating another array to store the indexes, I reused array A 
+        }
+        
+        return A; 
+    }
+}
+
+The solution works with a slightly better runtime of 6ms. 
+
+What I got out of this challenge:
+- Exercise with arrays and indexes 
+- Revisiting and applying hashmaps 
+
