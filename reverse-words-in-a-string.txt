@@ -1,0 +1,148 @@
+2018-01-26 
+
+Today I'll be tackling a medium level question on LeetCode. A bit of a change in pace because 
+I usually attempt easy level questions. 
+
+The challenge that I'll be tackling today is Reverse Words in a String found at: 
+https://leetcode.com/problems/reverse-words-in-a-string/description/
+
+Essentially I am challenged to produce a solution that consumes a string of words 
+and produces a string where the words are reversed. - Easier said than done, the consumed string
+can be altered with improper spacing. But lets give it a shot. 
+
+Consider, 
+
+The solution should firstly organize the string, by removing any improper spacings, and split the words in
+to an array. Secondly, it should reverse the elements in the array. Lastly, it should convert the reversed
+array into a string and return it to the user.
+
+public class Solution {
+    public String reverseWords(String s) {
+        String[] strarray = s.split(" "); 
+    
+        //reverses the string array
+        for(int i = 0; i < strarray.length/2; i++){
+            String tempstr = strarray[i]; 
+            strarray[i] = strarray[strarray.length - i - 1]; 
+            strarray[strarray.length - i - 1] = tempstr; 
+        }
+        
+        s="";//instead of creating new string to store reversed string, we recycle s
+        for(int j = 0; j < strarray.length; j++){
+            s += strarray[j]; 
+            s += (j != strarray.length-1) ? " " : "";  
+        }
+        
+        return s; 
+    }
+}
+
+It seems that the solution does not work for test case reverseWords(" 1"). The correct solution should
+return "1" but instead it returns "1 ". It is evident that my solution does not handle trailing and leading
+spaces so well. To save me some face, it works for common phrases like reverseWords("hello world it is me"), 
+where it would produce "me is it world hello", as expected. The next step is to make an edit to my solution 
+that supports leading and trailing spaces. 
+
+The following stackflow forum sheds a bit of light on this: 
+
+https://stackoverflow.com/questions/6652687/strip-leading-and-trailing-spaces-from-java-string 
+
+I can apply the trim function to remove any leading and trailing spaces.
+
+As such, 
+
+public class Solution {
+    public String reverseWords(String s) {
+        String[] strarray = s.trim().split(" "); //edit was made here
+    
+        //reverses the string array
+        for(int i = 0; i < strarray.length/2; i++){
+            String tempstr = strarray[i]; 
+            strarray[i] = strarray[strarray.length - i - 1]; 
+            strarray[strarray.length - i - 1] = tempstr; 
+        }
+        
+        s="";//instead of creating new string to store reversed string, we recycle s
+	//Populates string s
+        for(int j = 0; j < strarray.length; j++){
+            s += strarray[j]; 
+            s += (j != strarray.length-1) ? " " : "";  //To add a space after each word except the last word
+        }
+        
+        return s; 
+    }
+}
+
+The solution now can handle trailing and leading spaces, but it cannot handle the case of chunky spaces filled between
+words in the string s. For example, reverseWords("   a   b "), should produce "b a" but my solution returns "b   a". 
+
+I employed the replace function to remove double spaces within the gap of words in the function. If there is an odd number
+of spaces, then the replace function would remove all spaces and leave a single space. As such, we have: 
+
+public class Solution {
+    public String reverseWords(String s) {
+        String[] strarray = s.trim().replace("  ", "").split(" "); //edit was made here
+    
+        //reverses the string array
+        for(int i = 0; i < strarray.length/2; i++){
+            String tempstr = strarray[i]; 
+            strarray[i] = strarray[strarray.length - i - 1]; 
+            strarray[strarray.length - i - 1] = tempstr; 
+        }
+        
+        s="";//instead of creating new string to store reversed string, we recycle s
+	//Populates string s
+        for(int j = 0; j < strarray.length; j++){
+            s += strarray[j]; 
+            s += (j != strarray.length-1) ? " " : "";  //To add a space after each word except the last word
+        }
+        
+        return s; 
+    }
+}
+
+Now the solution works for reverseWords("   a   b "), giving "b a", however, the problem now is knowing how to go
+about solving the case of an even number of spaces between words in s. This is evident for the test case: 
+reverseWords("   a   b  c d   e  "), where it is expected that "e d c b a" would be returned, but my solution produces: 
+"e d bc a". 
+
+The following link shines a bit of light on things: 
+https://stackoverflow.com/questions/2932392/java-how-to-replace-2-or-more-spaces-with-single-space-in-string-and-delete-lead
+
+Instead of searching for even or odd number of spaces between words in string s, I can simply use some regex and the replaceAll function.
+
+Consider, 
+
+public class Solution {
+    public String reverseWords(String s) {
+        String[] strarray = s.trim().replaceAll("\\s{2,}", " ").split(" "); //edit was made here
+    
+        //reverses the string array
+        for(int i = 0; i < strarray.length/2; i++){
+            String tempstr = strarray[i]; 
+            strarray[i] = strarray[strarray.length - i - 1]; 
+            strarray[strarray.length - i - 1] = tempstr; 
+        }
+        
+        s="";//instead of creating new string to store reversed string, we recycle s
+	//Populates string s
+        for(int j = 0; j < strarray.length; j++){
+            s += strarray[j]; 
+            s += (j != strarray.length-1) ? " " : "";  //To add a space after each word except the last word
+        }
+        
+        return s; 
+    }
+}
+
+Now the solution trims any leading and trailing spaces like before. Then, using regex, replaces any number of spaces with a single
+space. Then it ends the line by spliting proper array of words into seperate words. 
+
+The solution works and is accepted by leetcode with a runtime of 108 ms. 
+
+What I got out of today: 
+
+- Learned how to apply trim function
+- Learned how to use replace() and replaceAll() 
+- Learned a bit of regex with \\s{2,} 
+- Learned how to use split function 
